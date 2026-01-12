@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>برنامج الإقلاع - 100 يوم</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #F2F2F7; 
+            min-height: 100vh; 
+            padding-bottom: 40px; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container { max-width: 448px; margin: 0 auto; }
+        
+        /* Header */
+        .header { padding: 48px 16px 16px; }
+        .header-box { 
+            background: #FFFFFF; 
+            border-radius: 12px; 
+            padding: 12px 16px; 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s;
+        }
+        .header-logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        .header-day-counter {
+            display: flex;
+            flex-direction: column;
+        }
+        .header-day-label {
+            font-size: 10px;
+            color: #6B7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .header-day-number {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000000;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+        .header-day-total {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        .settings-btn { 
+            width: 36px; 
+            height: 36px; 
+            background: #F9FAFB; 
+            border: none; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .settings-btn:active { transform: scale(0.92); }
+        .settings-btn svg { color: #6B7280; width: 18px; height: 18px; }
+        
+        /* Stats - ارتفاع أقل */
+        .stats-container { padding: 12px 16px 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .stat-card { 
+            background: #FFFFFF; 
+            border-radius: 10px; 
+            padding: 8px 12px; 
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+        .stat-icon { width: 14px; height: 14px; flex-shrink: 0; }
+        .stat-icon.success { color: #34C759; }
+        .stat-icon.fail { color: #FF3B30; }
+        .stat-icon.progress { color: #007AFF; }
+        .stat-icon.rate { color: #AF52DE; }
+        .stat-value { font-size: 20px; font-weight: 600; color: #000000; line-height: 1; }
+        .stat-label { font-size: 10px; color: #6B7280; line-height: 1.2; }
+        
+        /* Progress */
+        .progress-section { padding: 6px 16px 12px; }
+        
+        /* قسم الرسم البياني */
+        .chart-section {
+            padding: 6px 16px 12px;
+        }
+        
+        .chart-card {
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 16px;
+        }
+        
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: -0.24px;
+        }
+        
+        .progress-chart-main {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+        }
+        
+        .legend-text {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        .progress-card { background: #FFFFFF; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+        .progress-label { font-size: 13px; font-weight: 500; color: #000000; margin-bottom: 10px; }
+        .progress-bar { height: 6px; background: rgba(120, 120, 128, 0.16); border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
+        .progress-fill { height: 100%; background: linear-gradient(to right, #34C759, #30D158); transition: width 0.5s ease; border-radius: 999px; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 11px; color: #6B7280; }
+        
+        /* Action */
+        .action-section { padding: 6px 16px 12px; }
+        .action-card { 
+            background: #FFFFFF; 
+            border-radius: 12px; 
+            padding: 14px; 
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); 
+            position: relative; 
+            overflow: hidden;
+            border: 1px solid #E5E7EB;
+        }
+        .action-title { 
+            font-size: 15px; 
+            font-weight: 600; 
+            color: #000000; 
+            margin-bottom: 8px;
+        }
+        .current-day-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 12px; 
+            padding: 6px 10px; 
+            background: #F2F2F7; 
+            border-radius: 6px;
+        }
+        .current-day-label {
+            font-size: 11px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        .current-day-number { 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: #000000; 
+            line-height: 1.3;
+            margin-right: auto;
+        }
+        .action-buttons { display: flex; gap: 8px; }
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            transition: all 0.15s;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:disabled:active { transform: none; }
+        .btn-success { background: #E8F5E9; color: #059669; }
+        .btn-fail { background: #FFEBEE; color: #DC2626; }
+        .btn-icon { width: 16px; height: 16px; }
+        
+        /* Motivation */
+        .motivation-section { padding: 12px 16px; }
+        .motivation-card { 
+            background: #FFFFFF; 
+            border-radius: 10px; 
+            padding: 10px 12px; 
+            text-align: center;
+            border: 1px solid #E5E7EB;
+        }
+        .motivation-text { font-size: 11px; color: #3C3C43; line-height: 1.4; }
+        
+        /* Tips */
+        .tips-section { padding: 6px 16px; }
+        .tips-card { background: #FFFFFF; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+        .tips-header-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .tips-title { font-size: 15px; font-weight: 600; color: #000000; margin: 0; display: flex; align-items: center; gap: 6px; }
+        .tips-icon { width: 16px; height: 16px; color: #FF9500; }
+        .tips-toggle-btn {
+            background: none;
+            border: none;
+            color: #007AFF;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tips-toggle-btn:active { background: rgba(0, 122, 255, 0.1); }
+        .tips-arrow {
+            transition: transform 0.3s;
+        }
+        .tips-arrow.rotated {
+            transform: rotate(180deg);
+        }
+        .tips-list { list-style: none; padding: 0; }
+        .tips-list li { padding: 10px; background: #F2F2F7; border-radius: 8px; margin-bottom: 6px; font-size: 13px; color: #000000; }
+        .tip-hidden { display: none; }
+        
+        /* Settings Modal */
+        .settings-modal { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0, 0, 0, 0.4); 
+            z-index: 1000; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.3s;
+        }
+        .settings-modal.show { 
+            opacity: 1; 
+            pointer-events: all;
+        }
+        .settings-content { 
+            background: #F2F2F7; 
+            width: 100%; 
+            height: 100vh; 
+            overflow-y: auto; 
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transform: translateY(100%); 
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            border-radius: 20px 20px 0 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .settings-modal.show .settings-content { transform: translateY(0); }
+        
+        .drag-handle-container { 
+            padding: 12px 16px 8px; 
+            background: #F2F2F7; 
+            position: sticky; 
+            top: 0; 
+            z-index: 20; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+        }
+        .drag-handle { 
+            width: 36px; 
+            height: 5px; 
+            background: #C7C7CC; 
+            border-radius: 10px; 
+            margin-bottom: 12px;
+        }
+        .settings-header-inner { width: 100%; display: flex; align-items: center; }
+        .settings-title { font-size: 24px; font-weight: 700; color: #000000; flex: 1; }
+        
+        .settings-body { padding: 16px; }
+        .settings-section { margin-bottom: 35px; }
+        .settings-section-title { font-size: 13px; font-weight: 400; color: #6B7280; text-transform: uppercase; margin-bottom: 6px; padding: 0 16px; letter-spacing: -0.08px; }
+        .settings-group { background: #FFFFFF; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .settings-row { padding: 0 16px; display: flex; align-items: center; justify-content: space-between; min-height: 44px; border-bottom: 0.33px solid rgba(60, 60, 67, 0.36); cursor: pointer; transition: background 0.15s; }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row:active { background: rgba(0, 0, 0, 0.05); }
+        .settings-row-label { font-size: 17px; font-weight: 400; color: #000000; letter-spacing: -0.41px; }
+        .settings-row-with-icon { display: flex; align-items: center; gap: 12px; }
+        .settings-icon { width: 20px; height: 20px; color: #007AFF; flex-shrink: 0; }
+        .settings-row-arrow { width: 7px; height: 12px; color: #C7C7CC; flex-shrink: 0; }
+        .settings-button-row { 
+            background: #FFFFFF; 
+            border-radius: 10px; 
+            padding: 0 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            min-height: 44px; 
+            cursor: pointer; 
+            transition: all 0.15s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .settings-button-row:active { background: #F9FAFB; transform: scale(0.99); }
+        .settings-button-text { font-size: 17px; font-weight: 400; letter-spacing: -0.41px; }
+        .settings-button-text.danger { color: #EF4444; }
+        
+        /* Pages */
+        .page { 
+            position: fixed; 
+            inset: 0; 
+            background: #F2F2F7; 
+            z-index: 2000; 
+            transform: translateY(100%); 
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            will-change: transform;
+            display: flex;
+            flex-direction: column;
+        }
+        .page.show { transform: translateY(0); }
+        
+        .calendar-nav {
+            background: rgba(242, 242, 247, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+            padding: 0 16px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-back-btn {
+            background: none;
+            border: none;
+            color: #007AFF;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0;
+            transition: opacity 0.2s;
+        }
+        .nav-back-btn:active { opacity: 0.4; }
+        
+        .nav-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000000;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .nav-spacer { width: 60px; }
+        
+        .days-list {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px 0;
+        }
+        
+        .notes-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* أقسام الملاحظات */
+        .notes-section {
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 26px;
+            background: #E5E5EA;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #34C759;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(-18px);
+        }
+        
+        .editable-list {
+            min-height: 80px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #000000;
+            outline: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .editable-list:empty:before {
+            content: attr(data-placeholder);
+            color: #C7C7CC;
+        }
+        
+        .editable-list div {
+            margin: 0;
+            padding: 4px 0;
+            padding-right: 20px;
+            position: relative;
+        }
+        
+        .editable-list div:before {
+            content: '•';
+            position: absolute;
+            right: 0;
+            color: #000000;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        
+        /* قائمة بدون نقاط (عند إيقاف الزر) */
+        .no-bullets div:before {
+            content: none;
+        }
+        
+        .no-bullets div {
+            padding-right: 0;
+        }
+        
+        /* قسم حر بدون نقاط */
+        .editable-free {
+            min-height: 100px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #000000;
+            outline: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .editable-free:empty:before {
+            content: attr(data-placeholder);
+            color: #C7C7CC;
+        }
+        
+        /* Old textarea CSS - keep for compatibility */
+        .notes-textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            background: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 17px;
+            line-height: 1.5;
+            color: #000000;
+            resize: none;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .notes-textarea::placeholder {
+            color: #C7C7CC;
+        }
+        
+        /* صفحة المراحل */
+        .stages-content {
+            flex: 1;
+            overflow: hidden;
+            padding: 16px;
+            background: #F2F2F7;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* رسم بياني التطور */
+        .progress-chart {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 8px 0;
+            flex-shrink: 0;
+        }
+        
+        /* جدول مصغر بألوان الموقع */
+        .comparison-table {
+            background: #FFFFFF;
+            border-radius: 10px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin: 0 auto;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        /* هيدر الجدول */
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #F9F9F9;
+            border-bottom: 0.33px solid rgba(60, 60, 67, 0.36);
+        }
+        
+        .table-header-cell {
+            padding: 12px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #000000;
+            text-align: center;
+            letter-spacing: -0.08px;
+        }
+        
+        .table-header-cell:last-child {
+            border-right: none;
+        }
+        
+        /* صفوف الجدول - بدون عناوين */
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 0.33px solid rgba(60, 60, 67, 0.36);
+            min-height: 44px;
+            align-items: center;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        /* الخلايا */
+        .table-cell {
+            padding: 10px 8px;
+            font-size: 13px;
+            line-height: 1.2;
+            color: #000000;
+            letter-spacing: -0.08px;
+            background: #FFFFFF;
+            text-align: center;
+        }
+        
+        .stages-footer-card {
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            margin-top: 16px;
+        }
+        
+        .stages-footer-text {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #8E8E93;
+            letter-spacing: -0.08px;
+        }
+        
+        .day-row {
+            background: #FFFFFF;
+            margin: 0 16px 8px;
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        
+        .day-row-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .day-number-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 19px;
+            background: #F2F2F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+        }
+        
+        .day-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .day-date {
+            font-size: 14px;
+            color: #000000;
+            font-weight: 400;
+        }
+        
+        .difficulty-icon {
+            font-size: 14px;
+            margin-left: 6px;
+            flex-shrink: 0;
+        }
+        
+        .day-row.completed .day-number-badge {
+            background: #34C759;
+            color: #FFFFFF;
+        }
+        
+        .day-row.missed .day-number-badge {
+            background: #FF3B30;
+            color: #FFFFFF;
+        }
+        
+        .day-row.today {
+            border: 2px solid #007AFF;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+        .day-row.today .day-number-badge {
+            background: #007AFF;
+            color: #FFFFFF;
+        }
+        
+        /* مودال التأكيد - iOS Style */
+        .modal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0, 0, 0, 0.4); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            z-index: 9999; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.25s; 
+        }
+        .modal.show { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+        .modal-content { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 14px; 
+            max-width: 270px; 
+            width: 100%; 
+            overflow: hidden; 
+            transform: scale(0.9); 
+            transition: transform 0.25s; 
+        }
+        .modal.show .modal-content { 
+            transform: scale(1); 
+        }
+        .modal-header { 
+            padding: 20px 16px 16px; 
+            text-align: center; 
+        }
+        .modal-title { 
+            font-size: 17px; 
+            font-weight: 600; 
+            color: #000000; 
+            margin-bottom: 4px; 
+        }
+        .modal-description { 
+            font-size: 13px; 
+            color: #000000; 
+            line-height: 1.4; 
+        }
+        .modal-buttons { 
+            display: flex; 
+            border-top: 0.5px solid rgba(60, 60, 67, 0.29); 
+        }
+        .modal-btn { 
+            flex: 1; 
+            padding: 11px; 
+            border: none; 
+            background: none; 
+            font-size: 17px; 
+            cursor: pointer; 
+            color: #007AFF; 
+            transition: background 0.15s; 
+        }
+        .modal-btn:active { 
+            background: rgba(0, 0, 0, 0.05); 
+        }
+        .modal-btn.confirm { 
+            color: #FF3B30; 
+            font-weight: 600; 
+        }
+        .modal-btn.cancel { 
+            border-left: 0.5px solid rgba(60, 60, 67, 0.29); 
+            font-weight: 600; 
+        }
+        
+        /* مودال معلومات المرحلة */
+        .stage-info-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .stage-info-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .stage-info-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            max-width: 320px;
+            width: 100%;
+            padding: 24px 20px;
+            transform: scale(0.9);
+            transition: transform 0.25s;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .stage-info-modal.show .stage-info-content {
+            transform: scale(1);
+        }
+        .stage-info-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .stage-info-icon.hard { background: linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%); }
+        .stage-info-icon.medium { background: linear-gradient(135deg, #FF9500 0%, #FFBB33 100%); }
+        .stage-info-icon.easy { background: linear-gradient(135deg, #34C759 0%, #52D17C 100%); }
+        .stage-info-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000000;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .stage-info-days {
+            font-size: 13px;
+            color: #8E8E93;
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .stage-info-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .stage-info-list li {
+            padding: 10px 12px;
+            background: #F2F2F7;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #000000;
+            line-height: 1.4;
+            display: flex;
+            gap: 8px;
+        }
+        .stage-info-list li::before {
+            content: "•";
+            color: #007AFF;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .stage-close-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .stage-close-btn:active {
+            opacity: 0.7;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 40px 16px 24px;
+            margin-top: 20px;
+        }
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0.5;
+        }
+        .footer-logo {
+            width: 20px;
+            height: 20px;
+            color: #8E8E93;
+        }
+        .footer-text {
+            font-size: 13px;
+            color: #8E8E93;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-box">
+                <div class="header-logo-section">
+                    <div class="header-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="header-day-counter">
+                        <span class="header-day-label" id="header-day-label">اليوم</span>
+                        <span class="header-day-number"><span id="day-info-number">1</span> <span class="header-day-total" id="header-day-total">/ ١٠٠</span></span>
+                    </div>
+                </div>
+                <button class="settings-btn" onclick="openSettings()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <svg class="stat-icon success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="stat-value" id="success-days">0</span>
+                </div>
+                <p class="stat-label" id="stat-label-success">أيام النجاح</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <svg class="stat-icon fail" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="stat-value" id="missed-days">0</span>
+                </div>
+                <p class="stat-label" id="stat-label-missed">أيام التحدي</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <svg class="stat-icon progress" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <span class="stat-value" id="current-day">1</span>
+                </div>
+                <p class="stat-label" id="stat-label-current">اليوم الحالي</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <svg class="stat-icon rate" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="stat-value" id="success-rate">0%</span>
+                </div>
+                <p class="stat-label" id="stat-label-rate">معدل النجاح</p>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-card">
+                <div class="progress-label" id="progress-label">التقدم الإجمالي</div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 1%"></div></div>
+                <div class="progress-text">
+                    <span id="progress-start">البداية</span>
+                    <span id="progress-percent">1%</span>
+                    <span id="progress-end">اليوم 100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-card">
+                <div class="chart-title" id="chart-title">تطورك خلال الرحلة</div>
+                <svg class="progress-chart-main" width="100%" height="120" viewBox="0 0 320 120">
+                    <!-- الشبكة الخلفية -->
+                    <line x1="40" y1="20" x2="40" y2="80" stroke="#E5E5EA" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="120" y1="20" x2="120" y2="80" stroke="#E5E5EA" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="200" y1="20" x2="200" y2="80" stroke="#E5E5EA" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="280" y1="20" x2="280" y2="80" stroke="#E5E5EA" stroke-width="1" stroke-dasharray="2,2"/>
+                    
+                    <!-- الخط الأساسي -->
+                    <line x1="30" y1="80" x2="290" y2="80" stroke="#E5E5EA" stroke-width="2"/>
+                    
+                    <!-- منطقة التطور (gradient) -->
+                    <defs>
+                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#87CEEB;stop-opacity:0" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M 30 80 Q 90 70, 120 55 T 200 35 T 290 15 L 290 80 L 30 80 Z" 
+                          fill="url(#chartGradient)"/>
+                    
+                    <!-- نقاط المراحل -->
+                    <circle cx="30" cy="80" r="4" fill="#FF3B30" stroke="#FFFFFF" stroke-width="2"/>
+                    <circle cx="120" cy="55" r="4" fill="#FF9500" stroke="#FFFFFF" stroke-width="2"/>
+                    <circle cx="200" cy="35" r="4" fill="#34C759" stroke="#FFFFFF" stroke-width="2"/>
+                    <circle cx="290" cy="15" r="5" fill="#007AFF" stroke="#FFFFFF" stroke-width="2"/>
+                    
+                    <!-- التسميات -->
+                    <text x="30" y="100" font-size="12" fill="#8E8E93" text-anchor="middle" id="chart-day1">يوم 1</text>
+                    <text x="120" y="100" font-size="12" fill="#8E8E93" text-anchor="middle" id="chart-day30">يوم 30</text>
+                    <text x="200" y="100" font-size="12" fill="#8E8E93" text-anchor="middle" id="chart-day60">يوم 60</text>
+                    <text x="290" y="100" font-size="12" fill="#8E8E93" text-anchor="middle" id="chart-day100">يوم 100</text>
+                </svg>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #FF3B30;"></div>
+                        <span class="legend-text" id="legend-start">البداية</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #007AFF;"></div>
+                        <span class="legend-text" id="legend-peak">القمة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <div class="action-card">
+                <h3 class="action-title" id="action-title">كيف كان يومك؟</h3>
+                <div class="current-day-info">
+                    <span class="current-day-label" id="current-day-label">اليوم</span>
+                    <span class="current-day-number" id="action-day-number">1</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="btn-success" onclick="markDay('completed')">
+                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        <span id="btn-success-text">نجحت</span>
+                    </button>
+                    <button class="btn btn-fail" id="btn-fail" onclick="markDay('missed')">
+                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <span id="btn-fail-text">لم أنجح</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="motivation-section">
+            <div class="motivation-card"><p class="motivation-text" id="motivation-text">رحلة الألف ميل تبدأ بخطوة واحدة. أنت الآن في بداية طريق التغيير الحقيقي</p></div>
+        </div>
+
+        <div class="tips-section">
+            <div class="tips-card">
+                <div class="tips-header-wrapper">
+                    <h3 class="tips-title">
+                        <svg class="tips-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        <span id="tips-title">نصائح مفيدة</span>
+                    </h3>
+                    <button class="tips-toggle-btn" id="tips-toggle-btn" onclick="toggleTips()">
+                        <svg class="tips-arrow" id="tips-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                            <path d="M4 6L8 10L12 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <ul class="tips-list" id="tips-list">
+                    <li id="tip-1">اشغل وقت فراغك بأنشطة مفيدة مثل الرياضة أو القراءة</li>
+                    <li id="tip-2">ابتعد عن المحفزات البصرية والإلكترونية</li>
+                    <li id="tip-3">مارس تمارين التنفس والتأمل عند الشعور بالرغبة</li>
+                    <li id="tip-4" class="tip-hidden">احرص على النوم المبكر والاستيقاظ في وقت ثابت</li>
+                    <li id="tip-5" class="tip-hidden">اقضِ وقتاً مع العائلة والأصدقاء</li>
+                    <li id="tip-6" class="tip-hidden">تذكر دائماً أسبابك وأهدافك من هذه الرحلة</li>
+                    <li id="tip-7" class="tip-hidden">اشرب كمية كافية من الماء وحافظ على نظام غذائي صحي</li>
+                    <li id="tip-8" class="tip-hidden">استبدل العادات السلبية بعادات إيجابية تدريجياً</li>
+                    <li id="tip-9" class="tip-hidden">لا تتردد في طلب المساعدة والدعم عند الحاجة</li>
+                    <li id="tip-10" class="tip-hidden">احتفل بالإنجازات الصغيرة في رحلتك</li>
+                    <li id="tip-11" class="tip-hidden">حدد أهدافاً يومية صغيرة وقابلة للتحقيق</li>
+                    <li id="tip-12" class="tip-hidden">مارس الرياضة بانتظام لتحسين الصحة النفسية والجسدية</li>
+                    <li id="tip-13" class="tip-hidden">تعلم مهارة جديدة أو هواية تشغل وقتك</li>
+                    <li id="tip-14" class="tip-hidden">اكتب يومياتك وتأملاتك في رحلة التعافي</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <svg class="footer-logo" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <!-- رسمة صقر بسيطة -->
+                    <path d="M12 2C12 2 8 4 8 8C8 8 6 10 6 14C6 18 9 22 12 22C15 22 18 18 18 14C18 10 16 8 16 8C16 4 12 2 12 2Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 8L6 6M16 8L18 6" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="10" cy="10" r="1" fill="currentColor"/>
+                    <circle cx="14" cy="10" r="1" fill="currentColor"/>
+                    <path d="M9 14C9 14 10.5 15 12 15C13.5 15 15 14 15 14" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span class="footer-text">Developed by Hawk</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-modal" id="settings-modal" onclick="closeSettings()">
+        <div class="settings-content" onclick="event.stopPropagation()">
+            <div class="drag-handle-container">
+                <div class="drag-handle"></div>
+                <div class="settings-header-inner">
+                    <h3 class="settings-title" id="settings-title">الإعدادات</h3>
+                </div>
+            </div>
+
+            <div class="settings-body">
+                <div class="settings-section">
+                    <div class="settings-section-title" id="settings-section-customization">التخصيص</div>
+                    <div class="settings-group">
+                        <div class="settings-row" onclick="toggleAppLanguage(event)">
+                            <span class="settings-row-label" id="settings-app-lang-label">لغة التطبيق</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="color: #8E8E93; font-size: 17px;" id="app-lang-value">العربية</span>
+                                <svg class="settings-row-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="settings-row" onclick="toggleNumberLanguage(event)">
+                            <span class="settings-row-label" id="settings-number-lang-label">لغة الأرقام</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="color: #8E8E93; font-size: 17px;" id="number-lang-value">عربي</span>
+                                <svg class="settings-row-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title" id="settings-section-display">عرض</div>
+                    <div class="settings-group">
+                        <div class="settings-row" onclick="openStagesGuide(event)">
+                            <div class="settings-row-with-icon">
+                                <svg class="settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                                <span class="settings-row-label" id="settings-stages-label">مراحل التعافي</span>
+                            </div>
+                            <svg class="settings-row-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="settings-row" onclick="openNotes(event)">
+                            <div class="settings-row-with-icon">
+                                <svg class="settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                <span class="settings-row-label" id="settings-notes-label">المذكرة</span>
+                            </div>
+                            <svg class="settings-row-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="settings-row" onclick="openCalendar(event)">
+                            <div class="settings-row-with-icon">
+                                <svg class="settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="settings-row-label" id="settings-calendar-label">تقويم الرحلة</span>
+                            </div>
+                            <svg class="settings-row-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title" id="settings-section-info">معلومات البرنامج</div>
+                    <div class="settings-group">
+                        <div class="settings-row">
+                            <span class="settings-row-label" id="settings-start-date-label">تاريخ البدء</span>
+                            <span style="color: #8E8E93; font-size: 17px;" id="start-date-value">--/--/----</span>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-row-label" id="settings-total-days-label">إجمالي الأيام</span>
+                            <span style="color: #8E8E93; font-size: 17px;" id="total-days-value">١٠٠</span>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-row-label" id="settings-remaining-days-label">الأيام المتبقية</span>
+                            <span style="color: #8E8E93; font-size: 17px;" id="remaining-days-value">٩٩</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title" id="settings-section-danger">خطر</div>
+                    <div class="settings-button-row" onclick="handleResetClick(event)">
+                        <span class="settings-button-text danger" id="settings-reset-text">إعادة ضبط البرنامج</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال التأكيد - iOS Style -->
+    <div class="modal" id="reset-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">إعادة الضبط</h3>
+                <p class="modal-description" id="modal-message">هل تريد حذف جميع البيانات والبدء من جديد؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="modal-cancel" onclick="closeResetModal()">إلغاء</button>
+                <button class="modal-btn confirm" id="modal-confirm" onclick="confirmReset()">إعادة الضبط</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال معلومات المرحلة -->
+    <div class="stage-info-modal" id="stage-info-modal" onclick="closeStageInfo()">
+        <div class="stage-info-content" onclick="event.stopPropagation()">
+            <div class="stage-info-icon" id="stage-icon">💪</div>
+            <h3 class="stage-info-title" id="stage-title">مرحلة التحدي</h3>
+            <p class="stage-info-days" id="stage-days">أيام 1-14</p>
+            <ul class="stage-info-list" id="stage-list">
+                <li>الأصعب لكن الأهم</li>
+                <li>الجسم يتكيف مع التغيير</li>
+                <li>كل يوم نجاح خطوة كبيرة</li>
+            </ul>
+            <button class="stage-close-btn" onclick="closeStageInfo()">فهمت</button>
+        </div>
+    </div>
+
+    <div class="page" id="calendar-page">
+        <div class="calendar-nav">
+            <button class="nav-back-btn" onclick="closeCalendar()">
+                <span id="back-text">← رجوع</span>
+            </button>
+            <h1 class="nav-title" id="calendar-title">سجل الأيام</h1>
+            <div class="nav-spacer"></div>
+        </div>
+        <div class="days-list" id="calendar"></div>
+    </div>
+
+    <div class="page" id="notes-page">
+        <div class="calendar-nav">
+            <button class="nav-back-btn" onclick="closeNotes()">
+                <span id="back-text-notes">← رجوع</span>
+            </button>
+            <h1 class="nav-title" id="notes-title">المذكرة</h1>
+            <button class="nav-back-btn" onclick="saveNotes()" style="margin-right: 0;">
+                <span id="save-text">حفظ</span>
+            </button>
+        </div>
+        
+        <!-- زر الترتيب التلقائي -->
+        <div style="padding: 12px 16px; background: #F2F2F7;">
+            <div style="background: white; border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <span style="font-size: 15px; font-weight: 500; color: #000;" id="auto-format-label">ترتيب تلقائي للكلام</span>
+                <div class="toggle-switch active" id="global-bullet-toggle" onclick="toggleAllBullets(this)">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes-container">
+            <!-- أهدافك -->
+            <div class="notes-section">
+                <h3 class="section-title" id="section-goals">أهدافك:</h3>
+                <div class="editable-list" id="goals-list" contenteditable="true" data-placeholder="اكتب هدفك الأول..."></div>
+            </div>
+            
+            <!-- مشاعرك -->
+            <div class="notes-section">
+                <h3 class="section-title" id="section-feelings">مشاعرك:</h3>
+                <div class="editable-list" id="feelings-list" contenteditable="true" data-placeholder="كيف تشعر اليوم؟"></div>
+            </div>
+            
+            <!-- التحديات -->
+            <div class="notes-section">
+                <h3 class="section-title" id="section-challenges">التحديات:</h3>
+                <div class="editable-list" id="challenges-list" contenteditable="true" data-placeholder="ما التحديات التي واجهتك؟"></div>
+            </div>
+            
+            <!-- المهم -->
+            <div class="notes-section">
+                <h3 class="section-title" id="section-important">المهم:</h3>
+                <div class="editable-list" id="important-list" contenteditable="true" data-placeholder="ما الأشياء المهمة اليوم؟"></div>
+            </div>
+            
+            <!-- أشياء أخرى -->
+            <div class="notes-section">
+                <h3 class="section-title" id="section-other">أشياء أخرى:</h3>
+                <div class="editable-free" id="other-notes" contenteditable="true" data-placeholder="اكتب أي شيء تريده هنا..."></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة مراحل التعافي -->
+    <div class="page" id="stages-page">
+        <div class="calendar-nav">
+            <button class="nav-back-btn" onclick="closeStagesPage()">
+                <span id="back-text-stages">← رجوع</span>
+            </button>
+            <h1 class="nav-title" id="stages-page-title">مراحل التعافي</h1>
+            <div class="nav-spacer"></div>
+        </div>
+        <div class="stages-content" id="stages-content">
+            <!-- المراحل تُضاف هنا بالجافاسكربت -->
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+        
+        // نصوص اللغة
+        const translations = {
+            ar: {
+                title: "برنامج الإقلاع - 100 يوم",
+                headerDay: "اليوم",
+                headerTotal: "/ ١٠٠",
+                statsSuccess: "أيام النجاح",
+                statsMissed: "أيام التحدي",
+                statsCurrent: "اليوم الحالي",
+                statsRate: "معدل النجاح",
+                progressLabel: "التقدم الإجمالي",
+                chartTitle: "تطورك خلال الرحلة",
+                chartDay1: "يوم 1",
+                chartDay30: "يوم 30",
+                chartDay60: "يوم 60",
+                chartDay100: "يوم 100",
+                legendStart: "البداية",
+                legendPeak: "القمة",
+                progressStart: "البداية",
+                progressEnd: "اليوم 100",
+                actionTitle: "كيف كان يومك؟",
+                currentDayLabel: "اليوم",
+                btnSuccess: "نجحت",
+                btnFail: "لم أنجح",
+                motivation: "رحلة الألف ميل تبدأ بخطوة واحدة. أنت الآن في بداية طريق التغيير الحقيقي",
+                tipsTitle: "نصائح مفيدة",
+                tip1: "اشغل وقت فراغك بأنشطة مفيدة مثل الرياضة أو القراءة",
+                tip2: "ابتعد عن المحفزات البصرية والإلكترونية",
+                tip3: "مارس تمارين التنفس والتأمل عند الشعور بالرغبة",
+                tip4: "احرص على النوم المبكر والاستيقاظ في وقت ثابت",
+                tip5: "اقضِ وقتاً مع العائلة والأصدقاء",
+                tip6: "تذكر دائماً أسبابك وأهدافك من هذه الرحلة",
+                tip7: "اشرب كمية كافية من الماء وحافظ على نظام غذائي صحي",
+                tip8: "استبدل العادات السلبية بعادات إيجابية تدريجياً",
+                tip9: "لا تتردد في طلب المساعدة والدعم عند الحاجة",
+                tip10: "احتفل بالإنجازات الصغيرة في رحلتك",
+                tip11: "حدد أهدافاً يومية صغيرة وقابلة للتحقيق",
+                tip12: "مارس الرياضة بانتظام لتحسين الصحة النفسية والجسدية",
+                tip13: "تعلم مهارة جديدة أو هواية تشغل وقتك",
+                tip14: "اكتب يومياتك وتأملاتك في رحلة التعافي",
+                tipsToggleAll: "عرض الكل",
+                tipsToggleLess: "عرض أقل",
+                settingsTitle: "الإعدادات",
+                settingsCustomization: "التخصيص",
+                settingsNumberLang: "لغة الأرقام",
+                settingsAppLang: "لغة التطبيق",
+                settingsDisplay: "عرض",
+                settingsStages: "رحلة التحول",
+                settingsNotes: "المذكرة",
+                settingsCalendar: "تقويم الرحلة",
+                settingsInfo: "معلومات البرنامج",
+                settingsStartDate: "تاريخ البدء",
+                settingsTotalDays: "إجمالي الأيام",
+                settingsRemainingDays: "الأيام المتبقية",
+                settingsDanger: "خطر",
+                settingsReset: "إعادة ضبط البرنامج",
+                back: "← رجوع",
+                calendarTitle: "سجل الأيام",
+                notesTitle: "المذكرة",
+                save: "حفظ",
+                sectionGoals: "أهدافك:",
+                sectionFeelings: "مشاعرك:",
+                sectionChallenges: "التحديات:",
+                sectionImportant: "المهم:",
+                sectionOther: "أشياء أخرى:",
+                placeholderGoals: "اكتب هدفك الأول...",
+                placeholderFeelings: "كيف تشعر اليوم؟",
+                placeholderChallenges: "ما التحديات التي واجهتك؟",
+                placeholderImportant: "ما الأشياء المهمة اليوم؟",
+                placeholderOther: "اكتب أي شيء تريده هنا...",
+                autoFormatLabel: "ترتيب تلقائي للكلام",
+                notesPlaceholder: "اكتب ملاحظاتك هنا...\n\nيمكنك كتابة:\n• أهدافك\n• مشاعرك\n• التحديات التي واجهتك\n• النجاحات التي حققتها",
+                resetConfirm: "هل تريد حذف جميع البيانات والبدء من جديد؟ لا يمكن التراجع عن هذا الإجراء.",
+                arabicNumbers: "عربي",
+                englishNumbers: "English",
+                arabicLanguage: "العربية",
+                englishLanguage: "English"
+            },
+            en: {
+                title: "Recovery Program - 100 Days",
+                headerDay: "Day",
+                headerTotal: "/ 100",
+                statsSuccess: "Successful Days",
+                statsMissed: "Challenge Days",
+                statsCurrent: "Current Day",
+                statsRate: "Success Rate",
+                progressLabel: "Overall Progress",
+                chartTitle: "Your Progress Journey",
+                chartDay1: "Day 1",
+                chartDay30: "Day 30",
+                chartDay60: "Day 60",
+                chartDay100: "Day 100",
+                legendStart: "Start",
+                legendPeak: "Peak",
+                progressStart: "Start",
+                progressEnd: "Day 100",
+                actionTitle: "How was your day?",
+                currentDayLabel: "Day",
+                btnSuccess: "Successful",
+                btnFail: "Not Successful",
+                motivation: "A journey of a thousand miles begins with a single step. You're now at the beginning of real change",
+                tipsTitle: "Useful Tips",
+                tip1: "Fill your free time with beneficial activities like sports or reading",
+                tip2: "Stay away from visual and electronic triggers",
+                tip3: "Practice breathing exercises and meditation when you feel the urge",
+                tip4: "Make sure to sleep early and wake up at a consistent time",
+                tip5: "Spend time with family and friends",
+                tip6: "Always remember your reasons and goals for this journey",
+                tip7: "Drink enough water and maintain a healthy diet",
+                tip8: "Replace negative habits with positive ones gradually",
+                tip9: "Don't hesitate to ask for help and support when needed",
+                tip10: "Celebrate small achievements in your journey",
+                tip11: "Set small daily goals that are achievable",
+                tip12: "Exercise regularly to improve mental and physical health",
+                tip13: "Learn a new skill or hobby to occupy your time",
+                tip14: "Write your diary and reflections on the recovery journey",
+                tipsToggleAll: "Show All",
+                tipsToggleLess: "Show Less",
+                settingsTitle: "Settings",
+                settingsCustomization: "Customization",
+                settingsNumberLang: "Number Language",
+                settingsAppLang: "App Language",
+                settingsDisplay: "Display",
+                settingsStages: "Transformation Journey",
+                settingsNotes: "Notes",
+                settingsCalendar: "Journey Calendar",
+                settingsInfo: "Program Information",
+                settingsStartDate: "Start Date",
+                settingsTotalDays: "Total Days",
+                settingsRemainingDays: "Remaining Days",
+                settingsDanger: "Danger",
+                settingsReset: "Reset Program",
+                back: "← Back",
+                calendarTitle: "Days Record",
+                notesTitle: "Notes",
+                save: "Save",
+                sectionGoals: "Your Goals:",
+                sectionFeelings: "Your Feelings:",
+                sectionChallenges: "Challenges:",
+                sectionImportant: "Important:",
+                sectionOther: "Other Things:",
+                placeholderGoals: "Write your first goal...",
+                placeholderFeelings: "How do you feel today?",
+                placeholderChallenges: "What challenges did you face?",
+                placeholderImportant: "What are the important things today?",
+                placeholderOther: "Write anything you want here...",
+                autoFormatLabel: "Auto-Format Text",
+                notesPlaceholder: "Write your notes here...\n\nYou can write:\n• Your goals\n• Your feelings\n• Challenges you faced\n• Successes you achieved",
+                resetConfirm: "Do you want to delete all data and start over? This action cannot be undone.",
+                arabicNumbers: "Arabic",
+                englishNumbers: "English",
+                arabicLanguage: "Arabic",
+                englishLanguage: "English"
+            }
+        };
+        
+        // البيانات
+        let programData = JSON.parse(localStorage.getItem('recoveryProgram100')) || {
+            startDate: new Date().toISOString(),
+            currentDay: 1,
+            completedDays: 0,
+            missedDays: 0,
+            dayStatus: {},
+            notes: '',
+            useArabicNumbers: true,
+            appLanguage: 'ar',
+            tipsExpanded: false,
+            currentAdviceIndex: 0,
+            recentAdvice: [] // آخر 5 نصائح
+        };
+        
+        if (programData.useArabicNumbers === undefined) programData.useArabicNumbers = true;
+        if (programData.appLanguage === undefined) programData.appLanguage = 'ar';
+        if (programData.tipsExpanded === undefined) programData.tipsExpanded = false;
+        if (programData.currentAdviceIndex === undefined) programData.currentAdviceIndex = 0;
+        if (programData.recentAdvice === undefined) programData.recentAdvice = [];
+        
+        // نصائح النجاح - مختصرة ومفيدة
+        const successAdvice = [
+            'ممتاز! استمر على هذا النهج. كل يوم نجاح يقربك من هدفك. حافظ على روتينك وتذكر سبب بدايتك.',
+            'رائع! أنت تبني عادات قوية. النجاح المتكرر يعني تكيف عقلك مع النمط الجديد. واصل التركيز.',
+            'أحسنت! القوة تأتي من الاستمرارية. أنت في منطقة الزخم، لا تتوقف واستثمر هذه الطاقة الإيجابية.',
+            'عظيم! كل يوم نجاح يستحق الاحتفال. كافئ نفسك بطريقة صحية. التقدير الذاتي مهم في رحلة التغيير.'
+        ];
+        
+        // نصائح الفشل - مختصرة ومفيدة
+        const failureAdvice = [
+            'لا بأس، الانتكاسة جزء من الرحلة. المهم العودة بقوة. حلل السبب وضع خطة لتجنبه مستقبلاً.',
+            'التعثر لا يعني الفشل. ما تعلمته اليوم يجعلك أقوى غداً. تجنب الشعور بالذنب وركز على الخطوة التالية.',
+            'الوقوع طبيعي، البقاء على الأرض هو الخيار. قف الآن، غيّر بيئتك، ابتعد عن المحفزات واطلب الدعم.',
+            'هذه اللحظة صعبة لكنها ليست النهاية. الفرق بين النجاح والفشل هو الاستمرار. راجع أهدافك وواصل بعزيمة.',
+            'اخرج من المكان فوراً! امشِ، اتصل بصديق، مارس الرياضة، اقرأ كتاب. أي نشاط بديل أفضل من الاستسلام.'
+        ];
+
+        // تحويل الأرقام للعربي أو الإنجليزي
+        function formatNum(num) {
+            const numStr = String(num);
+            if (!programData.useArabicNumbers) return numStr; // إنجليزي
+            // عربي
+            const arabicMap = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return numStr.replace(/\d/g, d => arabicMap[d]);
+        }
+
+        // تحديث اللغة
+        function updateLanguage() {
+            const lang = programData.appLanguage;
+            const t = translations[lang];
+            
+            // تحديث العنوان
+            document.title = t.title;
+            
+            // تحديث النصوص الرئيسية
+            document.getElementById('header-day-label').textContent = t.headerDay;
+            document.getElementById('stat-label-success').textContent = t.statsSuccess;
+            document.getElementById('stat-label-missed').textContent = t.statsMissed;
+            document.getElementById('stat-label-current').textContent = t.statsCurrent;
+            document.getElementById('stat-label-rate').textContent = t.statsRate;
+            document.getElementById('progress-label').textContent = t.progressLabel;
+            document.getElementById('chart-title').textContent = t.chartTitle;
+            document.getElementById('chart-day1').textContent = t.chartDay1;
+            document.getElementById('chart-day30').textContent = t.chartDay30;
+            document.getElementById('chart-day60').textContent = t.chartDay60;
+            document.getElementById('chart-day100').textContent = t.chartDay100;
+            document.getElementById('legend-start').textContent = t.legendStart;
+            document.getElementById('legend-peak').textContent = t.legendPeak;
+            document.getElementById('progress-start').textContent = t.progressStart;
+            document.getElementById('action-title').textContent = t.actionTitle;
+            document.getElementById('current-day-label').textContent = t.currentDayLabel;
+            document.getElementById('btn-success-text').textContent = t.btnSuccess;
+            document.getElementById('btn-fail-text').textContent = t.btnFail;
+            document.getElementById('motivation-text').textContent = t.motivation;
+            document.getElementById('tips-title').textContent = t.tipsTitle;
+            document.getElementById('tip-1').textContent = t.tip1;
+            document.getElementById('tip-2').textContent = t.tip2;
+            document.getElementById('tip-3').textContent = t.tip3;
+            document.getElementById('tip-4').textContent = t.tip4;
+            document.getElementById('tip-5').textContent = t.tip5;
+            document.getElementById('tip-6').textContent = t.tip6;
+            document.getElementById('tip-7').textContent = t.tip7;
+            document.getElementById('tip-8').textContent = t.tip8;
+            document.getElementById('tip-9').textContent = t.tip9;
+            document.getElementById('tip-10').textContent = t.tip10;
+            document.getElementById('tip-11').textContent = t.tip11;
+            document.getElementById('tip-12').textContent = t.tip12;
+            document.getElementById('tip-13').textContent = t.tip13;
+            document.getElementById('tip-14').textContent = t.tip14;
+            
+            // تحديث الإعدادات
+            document.getElementById('settings-title').textContent = t.settingsTitle;
+            document.getElementById('settings-section-customization').textContent = t.settingsCustomization;
+            document.getElementById('settings-number-lang-label').textContent = t.settingsNumberLang;
+            document.getElementById('settings-app-lang-label').textContent = t.settingsAppLang;
+            document.getElementById('settings-section-display').textContent = t.settingsDisplay;
+            document.getElementById('settings-stages-label').textContent = t.settingsStages;
+            document.getElementById('settings-notes-label').textContent = t.settingsNotes;
+            document.getElementById('settings-calendar-label').textContent = t.settingsCalendar;
+            document.getElementById('settings-section-info').textContent = t.settingsInfo;
+            document.getElementById('settings-start-date-label').textContent = t.settingsStartDate;
+            document.getElementById('settings-total-days-label').textContent = t.settingsTotalDays;
+            document.getElementById('settings-remaining-days-label').textContent = t.settingsRemainingDays;
+            document.getElementById('settings-section-danger').textContent = t.settingsDanger;
+            document.getElementById('settings-reset-text').textContent = t.settingsReset;
+            
+            // تحديث الصفحات الأخرى
+            document.getElementById('back-text').textContent = t.back;
+            document.getElementById('back-text-notes').textContent = t.back;
+            document.getElementById('calendar-title').textContent = t.calendarTitle;
+            document.getElementById('notes-title').textContent = t.notesTitle;
+            document.getElementById('save-text').textContent = t.save;
+            
+            // تحديث عناوين الأقسام
+            document.getElementById('section-goals').textContent = t.sectionGoals;
+            document.getElementById('section-feelings').textContent = t.sectionFeelings;
+            document.getElementById('section-challenges').textContent = t.sectionChallenges;
+            document.getElementById('section-important').textContent = t.sectionImportant;
+            document.getElementById('section-other').textContent = t.sectionOther;
+            
+            // تحديث placeholders
+            document.getElementById('goals-list').setAttribute('data-placeholder', t.placeholderGoals);
+            document.getElementById('feelings-list').setAttribute('data-placeholder', t.placeholderFeelings);
+            document.getElementById('challenges-list').setAttribute('data-placeholder', t.placeholderChallenges);
+            document.getElementById('important-list').setAttribute('data-placeholder', t.placeholderImportant);
+            document.getElementById('other-notes').setAttribute('data-placeholder', t.placeholderOther);
+            
+            // تحديث زر الترتيب التلقائي
+            document.getElementById('auto-format-label').textContent = t.autoFormatLabel;
+            
+            // تحديث قيم اللغة في الإعدادات
+            const numberLangEl = document.getElementById('number-lang-value');
+            if (numberLangEl) {
+                numberLangEl.textContent = programData.useArabicNumbers ? t.arabicNumbers : t.englishNumbers;
+            }
+            const appLangEl = document.getElementById('app-lang-value');
+            if (appLangEl) {
+                appLangEl.textContent = programData.appLanguage === 'ar' ? t.arabicLanguage : t.englishLanguage;
+            }
+        }
+
+        // تحديث الواجهة
+        function updateUI() {
+            document.getElementById('day-info-number').textContent = formatNum(programData.currentDay);
+            document.getElementById('action-day-number').textContent = formatNum(programData.currentDay);
+            document.getElementById('current-day').textContent = formatNum(programData.currentDay);
+            document.getElementById('success-days').textContent = formatNum(programData.completedDays);
+            document.getElementById('missed-days').textContent = formatNum(programData.missedDays);
+            
+            const totalPastDays = programData.currentDay - 1;
+            const rate = totalPastDays > 0 ? Math.round((programData.completedDays / totalPastDays) * 100) : 0;
+            document.getElementById('success-rate').textContent = formatNum(rate) + '%';
+            
+            const prog = Math.min(100, programData.currentDay);
+            document.getElementById('progress-fill').style.width = prog + '%';
+            document.getElementById('progress-percent').textContent = formatNum(prog) + '%';
+
+            const isDone = !!programData.dayStatus[programData.currentDay];
+            document.getElementById('btn-success').disabled = isDone || programData.currentDay > 100;
+            document.getElementById('btn-fail').disabled = isDone || programData.currentDay > 100;
+            
+            // تحديث "/ 100" في الهيدر
+            document.getElementById('header-day-total').textContent = '/ ' + formatNum(100);
+            
+            // تحديث "اليوم 100" في progress-end
+            const lang = programData.appLanguage;
+            const progressEnd = document.getElementById('progress-end');
+            if (progressEnd) {
+                progressEnd.textContent = (lang === 'ar' ? 'اليوم ' : 'Day ') + formatNum(100);
+            }
+            
+            // تحديث معلومات البرنامج - التاريخ
+            const startDateEl = document.getElementById('start-date-value');
+            if (startDateEl) {
+                const date = new Date(programData.startDate);
+                const dateStrRaw = date.toLocaleDateString('en-US'); // نجيب التاريخ بالإنجليزي
+                startDateEl.textContent = formatNum(dateStrRaw); // نحول كل الأرقام
+            }
+            
+            // تحديث "إجمالي الأيام"
+            document.getElementById('total-days-value').textContent = formatNum(100);
+            
+            const remainingDaysEl = document.getElementById('remaining-days-value');
+            if (remainingDaysEl) {
+                const remaining = Math.max(0, 100 - programData.currentDay + 1);
+                remainingDaysEl.textContent = formatNum(remaining);
+            }
+            
+            // تحديث الرسم البياني المتحرك
+            updateProgressChart();
+            
+            // رسالة خاصة لليوم 100
+            if (programData.currentDay === 100 && !programData.dayStatus[100]) {
+                const lang = programData.appLanguage;
+                const day100Message = lang === 'ar' ? 
+                    'مبروك وصولك لليوم 100! أنت على بُعد خطوة واحدة من إتمام الرحلة. اضغط نجحت لتحتفل بهذا الإنجاز العظيم!' :
+                    'Congratulations on reaching Day 100! You are one step away from completing the journey. Press Success to celebrate this great achievement!';
+                document.getElementById('motivation-text').textContent = day100Message;
+            }
+
+            localStorage.setItem('recoveryProgram100', JSON.stringify(programData));
+        }
+        
+        // تحديث الرسم البياني بناءً على التقدم - يعرض كل يوم
+        function updateProgressChart() {
+            const days = programData.dayStatus;
+            const currentDay = Math.min(programData.currentDay, 100);
+            
+            // بناء نقاط الرسم - كل 5 أيام نقطة
+            let points = [];
+            let baseY = 80;
+            
+            for (let day = 0; day <= 100; day += 5) {
+                let x = 30 + (day * 2.6); // توزيع على 290px
+                
+                if (day === 0 || day > currentDay) {
+                    // البداية أو المستقبل
+                    points.push({x: x, y: baseY, day: day});
+                    continue;
+                }
+                
+                // حساب معدل النجاح في آخر 5 أيام
+                let successCount = 0;
+                let totalCount = 0;
+                
+                for (let d = Math.max(1, day - 4); d <= Math.min(day, currentDay); d++) {
+                    if (days[d]) {
+                        totalCount++;
+                        if (days[d] === 'completed') successCount++;
+                    }
+                }
+                
+                // حساب الارتفاع
+                let successRate = totalCount > 0 ? successCount / totalCount : 0;
+                let y = baseY - (successRate * 65); // 65 = أقصى ارتفاع
+                
+                points.push({x: x, y: y, day: day});
+            }
+            
+            // بناء المسار
+            let pathD = `M ${points[0].x} ${points[0].y}`;
+            for (let i = 1; i < points.length; i++) {
+                pathD += ` L ${points[i].x} ${points[i].y}`;
+            }
+            
+            // تحديث SVG
+            const chartArea = document.querySelector('.progress-chart-main path[fill="url(#chartGradient)"]');
+            
+            if (chartArea) {
+                const areaPath = `${pathD} L ${points[points.length-1].x} 80 L ${points[0].x} 80 Z`;
+                chartArea.setAttribute('d', areaPath);
+            }
+            
+            // تحديث النقاط الرئيسية (1, 30, 60, 100)
+            const circles = document.querySelectorAll('.progress-chart-main circle');
+            if (circles[0]) circles[0].setAttribute('cy', points[0].y);   // يوم 1
+            if (circles[1]) circles[1].setAttribute('cy', points[6].y);   // يوم 30
+            if (circles[2]) circles[2].setAttribute('cy', points[12].y);  // يوم 60
+            if (circles[3]) circles[3].setAttribute('cy', points[20].y);  // يوم 100
+        }
+        
+        // تغيير لغة الأرقام
+        function toggleNumberLanguage(event) {
+            event.stopPropagation();
+            programData.useArabicNumbers = !programData.useArabicNumbers;
+            
+            // إعادة ضبط settings-content للتأكد من عدم تأثر الحجم
+            const settingsContent = document.querySelector('.settings-content');
+            if (settingsContent && document.getElementById('settings-modal').classList.contains('show')) {
+                settingsContent.style.transform = 'translateY(0)';
+                settingsContent.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                settingsContent.style.height = '100vh';
+            }
+            
+            updateLanguage();
+            updateUI();
+        }
+        
+        // تغيير لغة التطبيق
+        function toggleAppLanguage(event) {
+            event.stopPropagation();
+            
+            // تبديل اللغة
+            programData.appLanguage = programData.appLanguage === 'ar' ? 'en' : 'ar';
+            
+            // تحديث اتجاه الصفحة
+            document.documentElement.setAttribute('dir', programData.appLanguage === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', programData.appLanguage === 'ar' ? 'ar' : 'en');
+            
+            // إعادة ضبط settings-content للتأكد من عدم تأثر الحجم
+            const settingsContent = document.querySelector('.settings-content');
+            if (settingsContent && document.getElementById('settings-modal').classList.contains('show')) {
+                settingsContent.style.transform = 'translateY(0)';
+                settingsContent.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                settingsContent.style.height = '100vh';
+            }
+            
+            // تحديث اللغة
+            updateLanguage();
+            updateUI();
+        }
+
+        // تسجيل اليوم
+        function markDay(status) {
+            if (programData.dayStatus[programData.currentDay]) return;
+            
+            programData.dayStatus[programData.currentDay] = status;
+            if (status === 'completed') programData.completedDays++; 
+            else programData.missedDays++;
+            
+            if (programData.currentDay < 100) programData.currentDay++;
+            
+            updateAdvice(status); // تحديث النصيحة
+            updateUI();
+        }
+        
+        // تحديث النصيحة حسب النجاح/الفشل - بدون تكرار
+        function updateAdvice(status) {
+            const lang = programData.appLanguage;
+            
+            // نصيحة خاصة لليوم 100
+            if (programData.currentDay === 100) {
+                const day100Message = lang === 'ar' ? 
+                    'مبروك! أتممت الـ 100 يوم! أنت الآن شخص جديد بإرادة حديدية. هذا الإنجاز العظيم هو بداية حياة أفضل. فخور بك!' :
+                    'Congratulations! You completed 100 days! You are now a new person with iron will. This great achievement is the beginning of a better life. Proud of you!';
+                document.getElementById('motivation-text').textContent = day100Message;
+                localStorage.setItem('recoveryProgram100', JSON.stringify(programData));
+                return;
+            }
+            
+            const adviceArray = status === 'completed' ? successAdvice : failureAdvice;
+            
+            // قائمة النصائح المتاحة (غير مستخدمة في آخر 5 أيام)
+            const availableAdvice = [];
+            
+            for (let i = 0; i < adviceArray.length; i++) {
+                const adviceKey = `${status}-${i}`;
+                if (!programData.recentAdvice.includes(adviceKey)) {
+                    availableAdvice.push(i);
+                }
+            }
+            
+            // إذا كل النصائح مستخدمة، امسح القائمة وابدأ من جديد
+            if (availableAdvice.length === 0) {
+                programData.recentAdvice = [];
+                for (let i = 0; i < adviceArray.length; i++) {
+                    availableAdvice.push(i);
+                }
+            }
+            
+            // اختر نصيحة عشوائية من المتاحة
+            const randomIndex = availableAdvice[Math.floor(Math.random() * availableAdvice.length)];
+            const advice = adviceArray[randomIndex];
+            const adviceKey = `${status}-${randomIndex}`;
+            
+            // أضف للقائمة واحتفظ بآخر 5 فقط
+            programData.recentAdvice.push(adviceKey);
+            if (programData.recentAdvice.length > 5) {
+                programData.recentAdvice.shift(); // احذف الأقدم
+            }
+            
+            document.getElementById('motivation-text').textContent = advice;
+            localStorage.setItem('recoveryProgram100', JSON.stringify(programData));
+        }
+        
+        // عرض/إخفاء النصائح
+        function toggleTips() {
+            programData.tipsExpanded = !programData.tipsExpanded;
+            const hiddenTips = document.querySelectorAll('.tip-hidden');
+            const arrow = document.getElementById('tips-arrow');
+            
+            hiddenTips.forEach(tip => {
+                tip.style.display = programData.tipsExpanded ? 'block' : 'none';
+            });
+            
+            if (programData.tipsExpanded) {
+                arrow.classList.add('rotated');
+            } else {
+                arrow.classList.remove('rotated');
+            }
+            
+            localStorage.setItem('recoveryProgram100', JSON.stringify(programData));
+        }
+
+        // الإعدادات
+        let scrollPosition = 0;
+        
+        function openSettings() {
+            scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollPosition}px`;
+            document.body.style.width = '100%';
+            
+            // إعادة ضبط settings-content بالكامل
+            const settingsContent = document.querySelector('.settings-content');
+            if (settingsContent) {
+                settingsContent.style.transform = '';
+                settingsContent.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                settingsContent.style.height = '100vh';
+            }
+            
+            document.getElementById('settings-modal').classList.add('show');
+        }
+
+        function closeSettings() {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, scrollPosition);
+            document.getElementById('settings-modal').classList.remove('show');
+        }
+
+        // التقويم
+        function openCalendar(event) {
+            if (event) event.stopPropagation();
+            // ما نسكر الإعدادات - نخفيها بس
+            document.getElementById('settings-modal').style.visibility = 'hidden';
+            
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            const startDate = new Date(programData.startDate);
+            
+            for (let i = 1; i <= 100; i++) {
+                const row = document.createElement('div');
+                row.className = 'day-row';
+                
+                if (programData.dayStatus[i] === 'completed') row.classList.add('completed');
+                if (programData.dayStatus[i] === 'missed') row.classList.add('missed');
+                if (i === programData.currentDay) row.classList.add('today');
+                
+                const dayDate = new Date(startDate);
+                dayDate.setDate(startDate.getDate() + (i - 1));
+                // نجيب التاريخ حسب لغة التطبيق
+                const locale = programData.appLanguage === 'ar' ? 'ar-SA' : 'en-US';
+                const dateStrRaw = dayDate.toLocaleDateString(locale, { 
+                    month: 'short', 
+                    day: 'numeric',
+                    weekday: 'short'
+                });
+                const dateStr = formatNum(dateStrRaw);
+                
+                // أيقونة حسب الحالة
+                let icon = '';
+                let iconClickable = false;
+                if (i > programData.currentDay) {
+                    // يوم مستقبلي - ساعة
+                    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-left: 6px; flex-shrink: 0;">
+                        <circle cx="12" cy="12" r="9" stroke="#8E8E93" stroke-width="2" fill="none"/>
+                        <path d="M12 7 L12 12 L16 14" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"/>
+                    </svg>`;
+                } else {
+                    // تدرج حسب الصعوبة - قابل للضغط
+                    iconClickable = true;
+                    let color = '';
+                    let bars = '';
+                    if (i <= 14) {
+                        color = '#FF3B30'; // أحمر
+                        bars = '<rect x="4" y="12" width="3" height="8" fill="' + color + '"/><rect x="9" y="9" width="3" height="11" fill="' + color + '"/><rect x="14" y="6" width="3" height="14" fill="' + color + '"/>';
+                    } else if (i <= 45) {
+                        color = '#FF9500'; // برتقالي
+                        bars = '<rect x="4" y="10" width="3" height="10" fill="' + color + '"/><rect x="9" y="7" width="3" height="13" fill="' + color + '"/><rect x="14" y="10" width="3" height="10" fill="' + color + '"/>';
+                    } else {
+                        color = '#34C759'; // أخضر
+                        bars = '<rect x="4" y="14" width="3" height="6" fill="' + color + '"/><rect x="9" y="12" width="3" height="8" fill="' + color + '"/><rect x="14" y="10" width="3" height="10" fill="' + color + '"/>';
+                    }
+                    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-left: 6px; flex-shrink: 0; cursor: pointer;" onclick="event.stopPropagation(); showStageInfo(${i});">
+                        ${bars}
+                    </svg>`;
+                }
+                
+                row.innerHTML = `
+                    <div class="day-row-right">
+                        <div class="day-number-badge">${formatNum(i)}</div>
+                        <div class="day-info">
+                            <div class="day-date" style="display: flex; align-items: center;">
+                                ${icon}
+                                <span>${dateStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                calendar.appendChild(row);
+            }
+            
+            document.getElementById('calendar-page').classList.add('show');
+        }
+
+        function closeCalendar() {
+            document.getElementById('calendar-page').classList.remove('show');
+            // نرجع نظهر الإعدادات
+            document.getElementById('settings-modal').style.visibility = 'visible';
+        }
+
+        // المذكرة
+        function openNotes(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('settings-modal').style.visibility = 'hidden';
+            
+            // تحميل البيانات المحفوظة
+            const savedNotes = programData.notes || {};
+            document.getElementById('goals-list').innerHTML = savedNotes.goals || '';
+            document.getElementById('feelings-list').innerHTML = savedNotes.feelings || '';
+            document.getElementById('challenges-list').innerHTML = savedNotes.challenges || '';
+            document.getElementById('important-list').innerHTML = savedNotes.important || '';
+            document.getElementById('other-notes').innerHTML = savedNotes.other || '';
+            
+            // إضافة event listeners للنقاط التلقائية
+            setupBulletPoints();
+            
+            document.getElementById('notes-page').classList.add('show');
+        }
+
+        function closeNotes() {
+            document.getElementById('notes-page').classList.remove('show');
+            document.getElementById('settings-modal').style.visibility = 'visible';
+        }
+
+        function saveNotes() {
+            // حفظ محتوى كل قسم
+            programData.notes = {
+                goals: document.getElementById('goals-list').innerHTML,
+                feelings: document.getElementById('feelings-list').innerHTML,
+                challenges: document.getElementById('challenges-list').innerHTML,
+                important: document.getElementById('important-list').innerHTML,
+                other: document.getElementById('other-notes').innerHTML
+            };
+            localStorage.setItem('recoveryProgram100', JSON.stringify(programData));
+            closeNotes();
+        }
+        
+        // دالة تبديل النقاط (ON/OFF) - زر واحد للكل
+        function toggleAllBullets(toggleBtn) {
+            const lists = ['goals-list', 'feelings-list', 'challenges-list', 'important-list'];
+            toggleBtn.classList.toggle('active');
+            
+            lists.forEach(listId => {
+                const list = document.getElementById(listId);
+                
+                if (toggleBtn.classList.contains('active')) {
+                    // تشغيل النقاط
+                    list.classList.remove('no-bullets');
+                } else {
+                    // إيقاف النقاط
+                    list.classList.add('no-bullets');
+                }
+            });
+        }
+        
+        // دالة لإضافة النقاط تلقائياً - نظام ذكي
+        function setupBulletPoints() {
+            const lists = ['goals-list', 'feelings-list', 'challenges-list', 'important-list'];
+            
+            lists.forEach(listId => {
+                const list = document.getElementById(listId);
+                
+                // إضافة div أول مرة عند التركيز
+                list.addEventListener('focus', function() {
+                    if (list.childNodes.length === 0 || list.innerHTML.trim() === '') {
+                        const firstDiv = document.createElement('div');
+                        firstDiv.innerHTML = '<br>';
+                        list.innerHTML = '';
+                        list.appendChild(firstDiv);
+                        
+                        // ضع المؤشر داخل الـ div
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.setStart(firstDiv, 0);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                });
+                
+                // عند الضغط على Enter = نقطة جديدة
+                list.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        
+                        const selection = window.getSelection();
+                        const range = selection.getRangeAt(0);
+                        
+                        // إنشاء div جديد (نقطة جديدة)
+                        const newDiv = document.createElement('div');
+                        newDiv.innerHTML = '<br>';
+                        
+                        // إدراج بعد العنصر الحالي
+                        const currentDiv = range.startContainer.nodeType === 3 
+                            ? range.startContainer.parentElement 
+                            : range.startContainer;
+                        
+                        if (currentDiv.tagName === 'DIV' && currentDiv.parentElement === list) {
+                            currentDiv.parentElement.insertBefore(newDiv, currentDiv.nextSibling);
+                        } else {
+                            list.appendChild(newDiv);
+                        }
+                        
+                        // نقل المؤشر للـ div الجديد
+                        const newRange = document.createRange();
+                        newRange.setStart(newDiv, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                    }
+                });
+                
+                // تنظيف وتنسيق عند فقدان التركيز
+                list.addEventListener('blur', function() {
+                    formatBulletList(listId);
+                });
+                
+                // تنسيق عند الكتابة
+                list.addEventListener('input', function(e) {
+                    // إذا القائمة ما فيها div، أضف واحد
+                    if (list.childNodes.length === 0 || 
+                        (list.childNodes.length === 1 && list.childNodes[0].nodeType === 3)) {
+                        
+                        const text = list.textContent;
+                        const firstDiv = document.createElement('div');
+                        firstDiv.textContent = text;
+                        list.innerHTML = '';
+                        list.appendChild(firstDiv);
+                        
+                        // ضع المؤشر في نهاية النص
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.selectNodeContents(firstDiv);
+                        range.collapse(false);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                });
+            });
+        }
+        
+        function formatBulletList(listId) {
+            const list = document.getElementById(listId);
+            const content = list.innerHTML.trim();
+            
+            if (!content) {
+                list.innerHTML = '';
+                return;
+            }
+            
+            // تأكد أن كل المحتوى داخل div
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            
+            const divs = [];
+            
+            // استخراج النص من كل العناصر
+            Array.from(tempDiv.childNodes).forEach(node => {
+                if (node.nodeType === 3) { // Text node
+                    const text = node.textContent.trim();
+                    if (text) {
+                        const div = document.createElement('div');
+                        div.textContent = text;
+                        divs.push(div.outerHTML);
+                    }
+                } else if (node.tagName === 'DIV') {
+                    const text = node.textContent.trim();
+                    if (text || node.querySelector('br')) {
+                        divs.push(node.outerHTML);
+                    }
+                } else if (node.tagName === 'BR') {
+                    // تجاهل BR منفصلة
+                } else {
+                    const text = node.textContent.trim();
+                    if (text) {
+                        const div = document.createElement('div');
+                        div.textContent = text;
+                        divs.push(div.outerHTML);
+                    }
+                }
+            });
+            
+            if (divs.length > 0) {
+                list.innerHTML = divs.join('');
+            }
+        }
+
+        // صفحة مراحل التعافي
+        function openStagesGuide(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('settings-modal').style.visibility = 'hidden';
+            
+            const isArabic = programData.appLanguage === 'ar';
+            const stagesContent = document.getElementById('stages-content');
+            
+            // بيانات المقارنة - رسمية وواضحة
+            const comparisons = [
+                {
+                    categoryAr: 'النشاط البدني',
+                    categoryEn: 'Physical Activity',
+                    beforeAr: 'خمول دائم وإرهاق مستمر',
+                    beforeEn: 'Constant laziness and fatigue',
+                    afterAr: 'طاقة عالية ونشاط يومي',
+                    afterEn: 'High energy and daily activity'
+                },
+                {
+                    categoryAr: 'التركيز',
+                    categoryEn: 'Focus',
+                    beforeAr: 'تشتت وعدم القدرة على التركيز',
+                    beforeEn: 'Scattered and unable to focus',
+                    afterAr: 'تركيز قوي وأداء أفضل',
+                    afterEn: 'Strong focus and better performance'
+                },
+                {
+                    categoryAr: 'الاستيعاب',
+                    categoryEn: 'Comprehension',
+                    beforeAr: 'بطيء في الفهم والحفظ',
+                    beforeEn: 'Slow understanding and memory',
+                    afterAr: 'سرعة في الاستيعاب والفهم',
+                    afterEn: 'Quick comprehension and clarity'
+                },
+                {
+                    categoryAr: 'التفكير',
+                    categoryEn: 'Thinking',
+                    beforeAr: 'تفكير مشوش وغير واضح',
+                    beforeEn: 'Confused and unclear thinking',
+                    afterAr: 'تفكير صافي ومنطقي',
+                    afterEn: 'Clear and logical thinking'
+                },
+                {
+                    categoryAr: 'الذاكرة',
+                    categoryEn: 'Memory',
+                    beforeAr: 'ضعف الذاكرة والنسيان المتكرر',
+                    beforeEn: 'Poor memory and frequent forgetting',
+                    afterAr: 'ذاكرة قوية وتذكر أفضل',
+                    afterEn: 'Strong memory and better recall'
+                },
+                {
+                    categoryAr: 'الإنتاجية',
+                    categoryEn: 'Productivity',
+                    beforeAr: 'إنتاجية منخفضة وتأخر دائم',
+                    beforeEn: 'Low productivity and delays',
+                    afterAr: 'إنتاجية عالية وإنجاز مستمر',
+                    afterEn: 'High productivity and achievement'
+                },
+                {
+                    categoryAr: 'النوم',
+                    categoryEn: 'Sleep',
+                    beforeAr: 'أرق وصعوبة في النوم',
+                    beforeEn: 'Insomnia and sleep difficulty',
+                    afterAr: 'نوم عميق واستيقاظ مريح',
+                    afterEn: 'Deep sleep and restful awakening'
+                },
+                {
+                    categoryAr: 'الثقة بالنفس',
+                    categoryEn: 'Self-Confidence',
+                    beforeAr: 'ثقة منخفضة وشعور بالضعف',
+                    beforeEn: 'Low confidence and weakness',
+                    afterAr: 'ثقة عالية وقوة داخلية',
+                    afterEn: 'High confidence and inner strength'
+                },
+                {
+                    categoryAr: 'الحالة النفسية',
+                    categoryEn: 'Mental State',
+                    beforeAr: 'قلق مستمر واكتئاب',
+                    beforeEn: 'Constant anxiety and depression',
+                    afterAr: 'استقرار نفسي وراحة بال',
+                    afterEn: 'Mental stability and peace of mind'
+                },
+                {
+                    categoryAr: 'الدافعية',
+                    categoryEn: 'Motivation',
+                    beforeAr: 'فقدان الشغف والرغبة',
+                    beforeEn: 'Loss of passion and desire',
+                    afterAr: 'دافع قوي وطموح متجدد',
+                    afterEn: 'Strong drive and renewed ambition'
+                }
+            ];
+            
+            stagesContent.innerHTML = `
+                <div class="comparison-table">
+                    <div class="table-header">
+                        <div class="table-header-cell">${isArabic ? 'قبل' : 'Before'}</div>
+                        <div class="table-header-cell">${isArabic ? 'بعد' : 'After'}</div>
+                    </div>
+                    
+                    ${comparisons.map(c => `
+                        <div class="table-row">
+                            <div class="table-cell">${isArabic ? c.beforeAr : c.beforeEn}</div>
+                            <div class="table-cell">${isArabic ? c.afterAr : c.afterEn}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="progress-chart">
+                    <svg width="100%" height="80" viewBox="0 0 300 80" style="max-width: 400px;">
+                        <!-- الخط الأساسي -->
+                        <line x1="20" y1="60" x2="280" y2="60" stroke="#E5E5EA" stroke-width="2"/>
+                        
+                        <!-- منطقة التطور (gradient) -->
+                        <defs>
+                            <linearGradient id="stagesChartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#87CEEB;stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 20 60 Q 80 55, 100 45 T 180 25 T 280 10 L 280 60 L 20 60 Z" 
+                              fill="url(#stagesChartGradient)"/>
+                        
+                        <!-- نقاط المراحل -->
+                        <circle cx="20" cy="60" r="4" fill="#FF3B30" stroke="#FFFFFF" stroke-width="2"/>
+                        <circle cx="100" cy="45" r="4" fill="#FF9500" stroke="#FFFFFF" stroke-width="2"/>
+                        <circle cx="180" cy="25" r="4" fill="#34C759" stroke="#FFFFFF" stroke-width="2"/>
+                        <circle cx="280" cy="10" r="5" fill="#007AFF" stroke="#FFFFFF" stroke-width="2"/>
+                        
+                        <!-- التسميات -->
+                        <text x="20" y="75" font-size="11" fill="#8E8E93" text-anchor="middle">${isArabic ? 'يوم 1' : 'Day 1'}</text>
+                        <text x="100" y="75" font-size="11" fill="#8E8E93" text-anchor="middle">${isArabic ? 'يوم 30' : 'Day 30'}</text>
+                        <text x="180" y="75" font-size="11" fill="#8E8E93" text-anchor="middle">${isArabic ? 'يوم 60' : 'Day 60'}</text>
+                        <text x="280" y="75" font-size="11" fill="#8E8E93" text-anchor="middle">${isArabic ? 'يوم 100' : 'Day 100'}</text>
+                    </svg>
+                </div>
+            `;
+            
+            document.getElementById('stages-page-title').textContent = 
+                isArabic ? 'رحلة التحول' : 'Transformation Journey';
+            document.getElementById('back-text-stages').textContent = 
+                isArabic ? '← رجوع' : '← Back';
+            
+            document.getElementById('stages-page').classList.add('show');
+        }
+        
+        function closeStagesPage() {
+            document.getElementById('stages-page').classList.remove('show');
+            document.getElementById('settings-modal').style.visibility = 'visible';
+        }
+
+        // دوال المودال
+        function handleResetClick(event) { 
+            if (event) event.stopPropagation();
+            const isArabic = programData.appLanguage === 'ar';
+            
+            // تحديث نصوص المودال
+            document.getElementById('modal-title').textContent = 
+                isArabic ? 'إعادة الضبط' : 'Reset';
+            document.getElementById('modal-message').textContent = 
+                isArabic ? 'هل تريد حذف جميع البيانات والبدء من جديد؟ لا يمكن التراجع عن هذا الإجراء.' :
+                'Do you want to delete all data and start over? This action cannot be undone.';
+            document.getElementById('modal-cancel').textContent = 
+                isArabic ? 'إلغاء' : 'Cancel';
+            document.getElementById('modal-confirm').textContent = 
+                isArabic ? 'إعادة الضبط' : 'Reset';
+            
+            // نطلع المودال فوراً بدون انتظار
+            document.getElementById('reset-modal').classList.add('show'); 
+        }
+
+        function closeResetModal() { 
+            document.getElementById('reset-modal').classList.remove('show'); 
+        }
+        
+        function confirmReset() { 
+            localStorage.removeItem('recoveryProgram100'); 
+            location.reload(); 
+        }
+        
+        // دوال مودال معلومات المرحلة
+        function showStageInfo(dayNumber) {
+            const isArabic = programData.appLanguage === 'ar';
+            const modal = document.getElementById('stage-info-modal');
+            const icon = document.getElementById('stage-icon');
+            const title = document.getElementById('stage-title');
+            const days = document.getElementById('stage-days');
+            const list = document.getElementById('stage-list');
+            
+            let stageData = {};
+            if (dayNumber <= 14) {
+                stageData = {
+                    icon: 'hard',
+                    emoji: '💪',
+                    title: isArabic ? 'مرحلة التحدي' : 'Challenge Phase',
+                    days: isArabic ? 'أيام 1-14' : 'Days 1-14',
+                    points: isArabic ? [
+                        'الأصعب لكن الأهم',
+                        'الجسم يتكيف مع التغيير',
+                        'كل يوم انتصار كبير'
+                    ] : [
+                        'Hardest but most important',
+                        'Body adapts to change',
+                        'Every day is a big win'
+                    ]
+                };
+            } else if (dayNumber <= 45) {
+                stageData = {
+                    icon: 'medium',
+                    emoji: '📈',
+                    title: isArabic ? 'مرحلة البناء' : 'Building Phase',
+                    days: isArabic ? 'أيام 15-45' : 'Days 15-45',
+                    points: isArabic ? [
+                        'بناء عادات جديدة',
+                        'التعافي يصبح طبيعة',
+                        'القوة تتضاعف يومياً'
+                    ] : [
+                        'Building new habits',
+                        'Recovery becomes natural',
+                        'Strength doubles daily'
+                    ]
+                };
+            } else {
+                stageData = {
+                    icon: 'easy',
+                    emoji: '✨',
+                    title: isArabic ? 'مرحلة الثبات' : 'Stability Phase',
+                    days: isArabic ? 'أيام 46-100' : 'Days 46-100',
+                    points: isArabic ? [
+                        'أنت الآن أقوى',
+                        'العادات الجديدة راسخة',
+                        'النجاح أصبح نمط حياة'
+                    ] : [
+                        'You are now stronger',
+                        'New habits are solid',
+                        'Success is a lifestyle'
+                    ]
+                };
+            }
+            
+            icon.className = 'stage-info-icon ' + stageData.icon;
+            icon.textContent = stageData.emoji;
+            title.textContent = stageData.title;
+            days.textContent = stageData.days;
+            
+            list.innerHTML = stageData.points.map(p => `<li>${p}</li>`).join('');
+            
+            modal.classList.add('show');
+        }
+        
+        function closeStageInfo() {
+            document.getElementById('stage-info-modal').classList.remove('show');
+        }
+        
+        // السحب للإغلاق
+        function initDragHandle() {
+            const handleZone = document.querySelector('.drag-handle-container');
+            const settingsContent = document.querySelector('.settings-content');
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            handleZone.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+                isDragging = true;
+                settingsContent.style.transition = 'none';
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                if (diff > 0) {
+                    settingsContent.style.transform = `translateY(${diff}px)`;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                settingsContent.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                
+                const diff = currentY - startY;
+                if (diff > 120) {
+                    closeSettings();
+                } else {
+                    settingsContent.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        // تشغيل التطبيق
+        document.documentElement.setAttribute('dir', programData.appLanguage === 'ar' ? 'rtl' : 'ltr');
+        document.documentElement.setAttribute('lang', programData.appLanguage === 'ar' ? 'ar' : 'en');
+        
+        initDragHandle();
+        updateLanguage();
+        updateUI();
+    </script>
+</body>
+</html>

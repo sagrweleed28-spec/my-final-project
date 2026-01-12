@@ -1,0 +1,26 @@
+name: Build Android APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Create Android Project
+        run: |
+          cordova create myapp com.example.myapp MyApp
+          cd myapp
+          cordova platform add android
+          cp ../index.html www/index.html
+          cordova build android --release
+

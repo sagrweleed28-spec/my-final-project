@@ -7,20 +7,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          java-version: '11'
-          distribution: 'temurin'
+          node-version: 16
 
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Create Android Project
+      - name: Create and Build
         run: |
-          cordova create myapp com.example.myapp MyApp
-          cd myapp
+          cordova create temp_app com.mysagr.app MySagrApp
+          cd temp_app
           cordova platform add android
           cp ../index.html www/index.html
           cordova build android --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-final-app
+          path: temp_app/platforms/android/app/build/outputs/apk/release/*.apk
 
